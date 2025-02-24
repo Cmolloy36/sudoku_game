@@ -1,28 +1,44 @@
+import sys
+import argparse
 from sudoku_objects import *
+"""
+CLI Args should be:
+args[0] = fnm
+args[1] = cli or window
+args[2] = if cli, difficulty
+args[3] = verbose, "true" or "false"
+"""
 
 def main():
 
-    game_grid = Grid(default_grid)
-    # game_grid.update_cell_val(1,'01')
+    #argparse stuff here
 
-    
-    game_grid.solve()
-    print('solved!')
-    # print(game_grid)
+
+    verbose = False
+
+    if len(sys.argv) == 1:
+        pass
+    elif len(sys.argv) == 2:
+        fnm = sys.argv[0]
+        verbose = sys.argv[1]
+
+    grid = np.array([
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0],
+
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0],
+
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0],
+    [0,0,0,  0,0,0,  0,0,0]]
+    )
+
+    game_grid = Grid(grid)
+    game_grid.solve(verbose,reverse=True)
     
 
 if __name__ == '__main__':
-    default_grid = np.array([
-        [1,2,3,  4,5,6,  7,8,9],
-        [4,5,6,  7,8,9,  1,2,3],
-        [7,8,9,  1,2,3,  4,5,6],
-
-        [2,3,1,  5,6,4,  8,9,7],
-        [5,6,4,  8,9,7,  2,3,1],
-        [8,9,7,  2,3,1,  5,6,4],
-
-        [3,1,2,  6,4,5,  9,7,8],
-        [6,4,5,  9,7,8,  3,1,2],
-        [9,7,8,  3,1,2,  6,4,5]]
-    )
     main()

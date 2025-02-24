@@ -9,6 +9,10 @@ This project is my first independent project with [boot.dev](https://www.boot.de
 5. Implement UI that performs backtracking algorithm to solve a puzzle
 
 
+## Usage
+
+Run `python3 main.py` in the terminal.
+
 ## Testing
 
 Run `python3 -m unittest discover` in the terminal to perform all unit tests

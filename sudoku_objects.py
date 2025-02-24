@@ -4,7 +4,15 @@ import random
 DEFAULT = 0
 
 '''
-default_grid = np.array([
+
+'''
+
+class Grid(object):
+    '''
+    full 9x9 sudoku grid
+    '''
+
+    default_grid = np.array([
                 [1,2,3,  4,5,6,  7,8,9],
                 [4,5,6,  7,8,9,  1,2,3],
                 [7,8,9,  1,2,3,  4,5,6],
@@ -16,48 +24,63 @@ default_grid = np.array([
                 [3,1,2,  6,4,5,  9,7,8],
                 [6,4,5,  9,7,8,  3,1,2],
                 [9,7,8,  3,1,2,  6,4,5]]
-'''
+                )
 
-class Grid(object):
-    '''
-    full 9x9 sudoku grid
-    '''
-    def __init__(self,grid=None):
-        if grid.size != 0:
-            self.grid = grid
-        else:
-            self.grid = np.zeros((9,9))
+    def __init__(self,grid=np.empty(0)):
+
 
         self.box_sets = np.empty((3,3),dtype=object)
         
         for i in range(3):
             for j in range(3):
-                self.box_sets[i, j] = set(range(1, 10))
-
-        # print(self.box_sets)
+                self.box_sets[i, j] = set(range(1, 10)) #available values
         
         # Store valid values for cell
         self.coords = cross('012345678','012345678')
-        # self.set_initial_vals()
 
-        # self.grid = [[],[],[]]
-        # for i in range(3):
-        #     for j in range(3):
-        #         self.grid[i][j] = Box(i, j)
+        if grid.size != 0:
+            self.grid = grid
+        else:
+            self.grid = Grid.default_grid
+            self.create_unique_grid()
+
+        self.initialize_box_sets()
+
+        self.count = 0
+        self.valchecks = 0
 
 
     def __repr__(self):
         return f"{self.grid}"
     
 
+    def __eq__(self,oth):
+        self_grid = self.grid.flatten()
+        oth_grid = oth.grid.flatten()
+        for i in range(self.grid.size):
+            if self_grid[i] != oth_grid[i]:
+                return False
+        return True
+
+    
+    def initialize_box_sets(self):
+        indices = np.where(self.grid != DEFAULT)
+        for i in range(len(indices[0])):
+            val = self.grid[indices[0][i]][indices[1][i]]
+            coord = str(indices[0][i]) + str(indices[1][i])
+            self.update_box_set(val,coord)
+    
+
     def update_cell_val(self,val,coord):
         if self.is_valid_val(val,coord):
             row, col = convert_coordstr_to_int(coord)
             self.grid[row][col] = val
+            self.update_box_set(val,coord)
 
 
     def reset_cell_val(self,coord):
         row, col = convert_coordstr_to_int(coord)
+        self.update_box_set(self.grid[row][col],coord)
         self.grid[row][col] = DEFAULT
 
 
@@ -76,20 +99,6 @@ class Grid(object):
     
 
     def in_box(self,val,coord):
-        # row, col = convert_coord_to_box(coord)
-        # if row < 4:
-        #     if col < 4:
-        #     if col < 7:
-        #     else:
-        # if row < 7:
-        #     if col < 4:
-        #     if col < 7:
-        #     else:
-
-
-
-
-
         box_row, box_col, cell_row, cell_col = convert_coord_to_box(coord,box=True)
         # print(self.box_sets[box_row][box_col])
         if val not in self.box_sets[box_row][box_col]:
@@ -113,78 +122,50 @@ class Grid(object):
             self.box_sets[box_row][box_col].add(val)
 
 
-    # def get_digit_set(self,coord):
-    #     digitset = self.cell_set_dict[coord] 
-    #     for i in range(1,10):
-    #         if not self.is_valid_val(i,coord):
-    #             digitset = self.cell_set_dict[coord].replace(str(i),'')
-    #     return digitset
-
-
-    # def add_val_to_cell_set(self,val,coord):
-    #     row, col = convert_coord_to_box(coord)
-    #     self.cell_set_dict[(row,col)] += str(val)
-
-
-    # def remove_val_from_cell_set(self,val,coord):
-    #     row, col = convert_coord_to_box(coord)
-    #     self.cell_set_dict[(row,col)] = self.cell_set_dict[(row,col)].replace(str(val),'')
-    
-
-    # def update_box_set(self,val,coord):
-        
-        
-
-    # def set_initial_vals(self,seed=random.randint(0,100000)):
-    #     random.seed(seed)
-    #     '''
-    #     self.grid = np.array(
-    #         [1,2,3,  4,5,6,  7,8,9],
-    #         [4,5,6,  7,8,9,  1,2,3],
-    #         [7,8,9,  1,2,3,  4,5,6],
-
-    #         [2,3,1,  5,6,4,  8,9,7],
-    #         [5,6,4,  8,9,7,  2,3,1],
-    #         [8,9,7,  2,3,1,  5,6,4],
-
-    #         [3,1,2,  6,4,5,  9,7,8],
-    #         [6,4,5,  9,7,8,  3,1,2],
-    #         [9,7,8,  3,1,2,  6,4,5]
-    #     )
-    #     '''
-    #     indices = np.where(self.grid == 0)
-    #     if indices == None:
-    #         return
-
-    #     for i in range(len(indices[0])):
-    #         self.cell_set_dict[indices] = '012345678'
-    #         digit_set = self.get_digit_set(coord)
-    #         self.cell_set_dict[coord] = digit_set
-
-
-    def solve(self):
-        print(self.grid)
-        indices = np.where(self.grid == DEFAULT)
+    def solve(self,verbose=False,reverse=False):
+        indices = np.where(self.grid == DEFAULT) #this could be optimized to only get one
         if indices[0].size == 0:
+            if verbose:
+                print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
+            else:
+                print("Solved!")
+            print(self.grid)
             return True
 
         # get all combos of points
+        self.count += 1
 
         coord = str(indices[0][0]) + str(indices[1][0])
-        print(coord)
+
+        if verbose:
+            print(self.grid)
+            print(f"cell: ({indices[0][0] + 1},{indices[1][0] + 1})")
 
         row, col = convert_coord_to_box(coord)
         
-        for i in range(1,10):
-            print(i)
+        range_obj = np.arange(1,10)
+        if reverse:
+            range_obj = np.arange(start=9,stop=0,step=-1)
+
+
+        for i in range_obj:
+            self.valchecks += 1
             if self.is_valid_val(i,coord):
                 self.update_cell_val(i,coord)
-                self.update_box_set(i,coord)
-                if self.solve():
+                if self.solve(verbose,reverse):
                     return True
                 self.reset_cell_val(coord)
-                self.update_box_set(i,coord)
         return False
+    
+    
+    def create_unique_grid(self): # https://stackoverflow.com/questions/6924216/how-to-generate-sudoku-boards-with-unique-solutions
+        coordlist = self.coords
+        random.shuffle(coordlist)
+
+        while len(coordlist != 0):
+            self.solve()
+
+        
             
                 
 
