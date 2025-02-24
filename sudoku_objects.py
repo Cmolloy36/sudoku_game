@@ -1,6 +1,5 @@
 import numpy as np
 import random
-import itertools
 
 class Grid(object):
     '''
@@ -24,8 +23,10 @@ class Grid(object):
         #     for j in range(3):
         #         self.grid[i][j] = Box(i, j)
 
+
     def __repr__(self):
         return f"{self.grid}"
+
 
     def in_row(self,val,coord):
         row, col = convert_coord_to_box(coord)
@@ -33,12 +34,14 @@ class Grid(object):
             return True
         return False
 
+
     def in_col(self,val,coord):
         row, col = convert_coord_to_box(coord)
         if val in self.grid[:,col]:
             return True
         return False
     
+
     def in_box(self,val,coord):
         box_row, box_col, cell_row, cell_col = convert_coord_to_box(coord,box=True)
         print(self.box_sets[box_row][box_col])
@@ -46,29 +49,34 @@ class Grid(object):
             return True
         return False
     
+
     def add_val_to_cell_set(self,val,coord):
         row, col = convert_coord_to_box(coord)
         self.cell_set_dict[(row,col)] += str(val)
+
 
     def remove_val_from_cell_set(self,val,coord):
         row, col = convert_coord_to_box(coord)
         self.cell_set_dict[(row,col)] = self.cell_set_dict[(row,col)].replace(str(val),'')
         
+
     def add_cell_val(self,val,coord):
         box_row, box_col, row, col = convert_coord_to_box(coord,box=True)
         self.box_sets[box_row][box_col] = self.box_sets[box_row][box_col].discard(self.grid[row,col])
         self.grid[row,col] = str(val)
+
 
     def remove_cell_val(self,coord):
         box_row, box_col, row, col = convert_coord_to_box(coord,box=True)
         self.box_sets[box_row][box_col] += self.grid[row,col]
         self.grid[row,col] = '0' # or None: need to figure out which is more difficult to display
     
+
     def is_valid_val(self,val,coord):
         if (self.in_box(val,coord) or self.in_row(val,coord) or self.in_col(val,coord)):
             return False
         return True
-    
+
 
     def get_digit_set(self,coord):
         digitset = self.cell_set_dict[coord] 
@@ -76,7 +84,6 @@ class Grid(object):
             if not self.is_valid_val(i,coord):
                 digitset = self.cell_set_dict[coord].replace(str(i),'')
         return digitset
-        
         
 
     def set_initial_vals(self,seed=random.randint(0,100000)):
@@ -96,6 +103,10 @@ class Grid(object):
             [9,7,8,  3,1,2,  6,4,5]
         )
         '''
+        indices = np.where(self.grid == 0)
+        if indices == None:
+            return
+
         for coord in self.coords:
             self.cell_set_dict[coord] = '012345678'
             digit_set = self.get_digit_set(coord)
