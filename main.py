@@ -36,8 +36,10 @@ def main():
     [0,0,0,  0,0,0,  0,0,0]]
     )
 
-    game_grid = Grid(grid)
-    game_grid.solve(verbose,reverse=True)
+    game_grid = Grid()
+    
+    print(game_grid.grid)
+    # game_grid.solve(verbose)
     
 
 if __name__ == '__main__':

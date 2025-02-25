@@ -38,6 +38,9 @@ class Grid(object):
         # Store valid values for cell
         self.coords = cross('012345678','012345678')
 
+        self.count = 0
+        self.valchecks = 0
+
         if grid.size != 0:
             self.grid = grid
         else:
@@ -45,9 +48,6 @@ class Grid(object):
             self.create_unique_grid()
 
         self.initialize_box_sets()
-
-        self.count = 0
-        self.valchecks = 0
 
 
     def __repr__(self):
@@ -162,8 +162,32 @@ class Grid(object):
         coordlist = self.coords
         random.shuffle(coordlist)
 
-        while len(coordlist != 0):
-            self.solve()
+        ct = 0
+        visited_coords = []
+
+        while len(coordlist) != 0:
+            ct += 1
+
+            coord = coordlist.pop(0)
+            if coord in visited_coords:
+                break
+            visited_coords.append(coord)
+            self.reset_cell_val(coord)
+
+            print(f'count: {ct}\n')
+            print(self.grid)
+
+            sol1 = self.solve(verbose=False) # not solving for some reason
+            print(sol1)
+            if sol1:
+                sol2 = self.solve(verbose=False,reverse=True)
+                print('sol1: \n{sol1}')
+                print('sol2: \n{sol2}')
+                if sol1 != sol2:
+                    coordlist.append(coord)
+                    print('hi')
+                    break
+                
 
         
             
@@ -194,4 +218,4 @@ def convert_coord_to_box(coord,box=False):
 
 def cross(A, B):
     "Cross product of strings in A and strings in B."
-    return tuple(a + b for a in A for b in B)
+    return list(a + b for a in A for b in B)
