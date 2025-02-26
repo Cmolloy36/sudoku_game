@@ -67,15 +67,16 @@ class Grid(object):
             # self.create_unique_grid()
 
         self.cell_possible_values = {coord: set(range(1, 10)) for coord in self.coords}
-        self.row_constraints = {row: set() for row in range(9)}
-        self.col_constraints = {col: set() for col in range(9)}
-        self.box_constraints = {box: set() for box in range(9)}
+        
 
-        self.initialize_constraints()
+        self.set_constraints()
 
 
-    def __repr__(self):
-        return f"{self.grid}"
+    def __str__(self):
+        arr = self.grid.copy()
+        str_arr = arr.astype(str) 
+        str_arr[str_arr == '0'] = '.'
+        return f"{str_arr}"
     
 
     def __eq__(self,oth):
@@ -88,13 +89,15 @@ class Grid(object):
         return Grid(self.grid)
 
     
-    def initialize_constraints(self):
+    def set_constraints(self):
         indices = np.where(self.grid != DEFAULT)
+        self.row_constraints = {row: set() for row in range(9)}
+        self.col_constraints = {col: set() for col in range(9)}
+        self.box_constraints = {box: set() for box in range(9)}
         for i in range(len(indices[0])):
             row = indices[0][i]
             col = indices[1][i]
             box = convert_coord_to_box(str(row)+str(col))
-            print(box)
             val = self.grid[row][col]
             self.add_row_constraint(val,row)
             self.add_col_constraint(val,col)
@@ -176,25 +179,14 @@ class Grid(object):
         self.rm_box_constraint(val,box)
 
 
-    # def update_box_set(self,val,coord):
-    #     box_idx = convert_coord_to_box(coord)
-    #     # print(f"update box set: {self.box_sets[box_row][box_col]}")
-    #     if val in self.box_sets[box_row][box_col]:
-    #         # print(f"update box set: {self.box_sets[box_row][box_col]}")
-    #         self.box_sets[box_row][box_col].discard(val)
-    #     else:
-    #         self.box_sets[box_row][box_col].add(val)
-
-
     def solve(self,verbose=False,reverse=False):
         indices = np.where(self.grid == DEFAULT) #this could be optimized to only get one
         # print(len(indices[0]))
         if indices[0].size == 0:
             if verbose:
                 print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
-            else:
-                print("Solved!")
-            print(self.grid)
+                print(self.grid)
+            
             return True
         
         self.count += 1
@@ -202,7 +194,6 @@ class Grid(object):
         coord = str(indices[0][0]) + str(indices[1][0])
         # print(coord)
 
-        print(self.grid)
 
         if verbose:
             print(self.grid)
@@ -214,7 +205,7 @@ class Grid(object):
 
 
         for i in range_obj:
-            print(f"Trying {i} at {coord}")
+            # print(f"Trying {i} at {coord}")
             self.valchecks += 1
             if self.is_valid_val(i,coord):
                 self.update_cell_val(i,coord)
@@ -228,7 +219,6 @@ class Grid(object):
         coordlist = list(self.coords)
         random.shuffle(coordlist)
 
-
         ct = 0
         visited_coords = []
 
@@ -241,9 +231,6 @@ class Grid(object):
             coord = coordlist.pop(0)
             if coord in visited_coords:
                 return
-        
-            print(coord)
-            print(self.grid)
             
             row, col = convert_coordstr_to_int(coord)
             val = self.grid[row][col]
@@ -255,12 +242,6 @@ class Grid(object):
             visited_coords.append(coord)
             self.reset_cell_val(coord)
 
-            # indices = np.where(self.grid == DEFAULT)
-
-            # for i in range(len(indices[0])):
-            #     sol1_obj.reset_cell_val(str(indices[0][0]) + str(indices[1][0]))
-            #     sol2_obj.reset_cell_val(str(indices[0][0]) + str(indices[1][0]))
-
             if verbose:
                 print(f'count: {ct}\n')
                 print(self.grid)
@@ -268,26 +249,14 @@ class Grid(object):
             sol1_obj.grid = self.grid.copy()
             sol2_obj.grid = self.grid.copy()
 
-            sol1_obj.box_sets = self.box_sets.copy()
-            sol2_obj.box_sets = self.box_sets.copy()
-
-            # sol1_obj = copy.copy(self)
-            # sol2_obj = copy.copy(self)
             sol1_obj.solve(verbose=False,reverse=False) # not solving for some reason
             sol2_obj.solve(verbose=False,reverse=True)
-
-            # print(f'self: \n{self.grid}')
-            # print(f'sol1: \n{sol1_obj.grid}')
-            # print(f'sol2: \n{sol2_obj.grid}')
 
             if not np.array_equal(sol1_obj.grid, sol2_obj.grid):
                 coordlist.append(coord)
                 self.update_cell_val(val,coord)
-                
-
-        
-            
-                
+                return
+    
 
 def convert_coordstr_to_int(coord):
     return int(coord[0]), int(coord[1])
@@ -302,10 +271,6 @@ def convert_coord_to_box(coord):
     col = int(coord[1])
     box_index = (row // 3) * 3 + (col // 3)
     return box_index
-    # Use this twice: grid pos (8,0) will generate (2,2), (0,0). 
-    # Use first eles as grid idx, second eles as pos idx (2,0), (2,0)
-
-    # use dynamic programming to optimize: just have nums as base 3 in general?
 
 
 def cross(A, B):
