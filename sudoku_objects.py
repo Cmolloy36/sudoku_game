@@ -36,12 +36,21 @@ class Grid(object):
         [9,7,8,  3,1,2,  6,4,5]]
     )
 
+    one_row_grid = np.array([
+        [1,2,3,  4,5,6,  7,8,9],
+        [4,5,6,  7,8,9,  1,2,3],
+        [7,8,9,  1,2,3,  4,5,6],
+
+        [2,3,1,  5,6,4,  8,9,7],
+        [5,6,4,  8,9,7,  2,3,1],
+        [8,9,7,  2,3,1,  5,6,4],
+
+        [3,1,2,  6,4,5,  9,7,8],
+        [6,4,5,  9,7,8,  3,1,2],
+        [0,0,0,  0,0,0,  0,0,0]]
+    )
+
     def __init__(self,grid=np.empty(0)):
-        self.box_sets = np.empty((3,3),dtype=object)
-        
-        for i in range(3):
-            for j in range(3):
-                self.box_sets[i, j] = set(range(1, 10)) #available values
         
         # Store valid values for cell
         self.coords = cross('012345678','012345678')
@@ -57,7 +66,12 @@ class Grid(object):
             # print(self.grid)
             # self.create_unique_grid()
 
-        self.initialize_box_sets()
+        self.cell_possible_values = {coord: set(range(1, 10)) for coord in self.coords}
+        self.row_constraints = {row: set() for row in range(9)}
+        self.col_constraints = {col: set() for col in range(9)}
+        self.box_constraints = {box: set() for box in range(9)}
+
+        self.initialize_constraints()
 
 
     def __repr__(self):
@@ -74,45 +88,60 @@ class Grid(object):
         return Grid(self.grid)
 
     
-    def initialize_box_sets(self):
+    def initialize_constraints(self):
         indices = np.where(self.grid != DEFAULT)
         for i in range(len(indices[0])):
-            val = self.grid[indices[0][i]][indices[1][i]]
-            coord = str(indices[0][i]) + str(indices[1][i])
-            self.update_box_set(val,coord)
-    
-
-    def update_cell_val(self,val,coord):
-        if self.is_valid_val(val,coord):
-            row, col = convert_coordstr_to_int(coord)
-            self.grid[row][col] = val
-            self.update_box_set(val,coord)
+            row = indices[0][i]
+            col = indices[1][i]
+            box = convert_coord_to_box(str(row)+str(col))
+            print(box)
+            val = self.grid[row][col]
+            self.add_row_constraint(val,row)
+            self.add_col_constraint(val,col)
+            self.add_box_constraint(val,box)
 
 
-    def reset_cell_val(self,coord):
-        row, col = convert_coordstr_to_int(coord)
-        self.update_box_set(self.grid[row][col],coord)
-        self.grid[row][col] = DEFAULT
+    def add_row_constraint(self,val,row):
+        self.row_constraints[row].add(val)
+
+
+    def add_col_constraint(self,val,col):
+        self.col_constraints[col].add(val)
+
+
+    def add_box_constraint(self,val,box):
+        self.box_constraints[box].add(val)
+
+
+    def rm_row_constraint(self,val,row):
+        self.row_constraints[row].discard(val)
+
+
+    def rm_col_constraint(self,val,col):
+        self.col_constraints[col].discard(val)
+
+
+    def rm_box_constraint(self,val,box):
+        self.box_constraints[box].discard(val)
 
 
     def in_row(self,val,coord):
         row, col = convert_coordstr_to_int(coord)
-        if val in self.grid[row]:
+        if val in self.row_constraints[row]: # if I use not, then it becomes values that COULD be in the row
             return True
         return False
 
 
     def in_col(self,val,coord):
         row, col = convert_coordstr_to_int(coord)
-        if val in self.grid[:,col]:
+        if val in self.col_constraints[col]: # if I use not, then it becomes values that COULD be in the col
             return True
         return False
     
 
     def in_box(self,val,coord):
-        box_row, box_col, cell_row, cell_col = convert_coord_to_box(coord,box=True)
-        # print(self.box_sets[box_row][box_col])
-        if val not in self.box_sets[box_row][box_col]:
+        box_idx = convert_coord_to_box(coord)
+        if val in self.box_constraints[box_idx]: # if I use not, then it becomes values that COULD be in the box
             return True
         return False
     
@@ -123,43 +152,69 @@ class Grid(object):
         return True
     
 
-    def update_box_set(self,val,coord):
-        box_row, box_col, row, col = convert_coord_to_box(coord,box=True)
-        # print(f"update box set: {self.box_sets[box_row][box_col]}")
-        if val in self.box_sets[box_row][box_col]:
-            # print(f"update box set: {self.box_sets[box_row][box_col]}")
-            self.box_sets[box_row][box_col].discard(val)
-        else:
-            self.box_sets[box_row][box_col].add(val)
+    def update_cell_val(self,val,coord):
+        if self.is_valid_val(val,coord):
+            row, col = convert_coordstr_to_int(coord)
+            box = convert_coord_to_box(coord)
+
+            self.grid[row][col] = val
+
+            self.add_row_constraint(val,row)
+            self.add_col_constraint(val,col)
+            self.add_box_constraint(val,box)
+
+
+    def reset_cell_val(self,coord):
+        row, col = convert_coordstr_to_int(coord)
+        box = convert_coord_to_box(coord)
+
+        val = self.grid[row][col]
+        self.grid[row][col] = DEFAULT
+
+        self.rm_row_constraint(val,row)
+        self.rm_col_constraint(val,col)
+        self.rm_box_constraint(val,box)
+
+
+    # def update_box_set(self,val,coord):
+    #     box_idx = convert_coord_to_box(coord)
+    #     # print(f"update box set: {self.box_sets[box_row][box_col]}")
+    #     if val in self.box_sets[box_row][box_col]:
+    #         # print(f"update box set: {self.box_sets[box_row][box_col]}")
+    #         self.box_sets[box_row][box_col].discard(val)
+    #     else:
+    #         self.box_sets[box_row][box_col].add(val)
 
 
     def solve(self,verbose=False,reverse=False):
         indices = np.where(self.grid == DEFAULT) #this could be optimized to only get one
+        # print(len(indices[0]))
         if indices[0].size == 0:
             if verbose:
                 print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
-            # else:
-            #     print("Solved!")
-            # print(self.grid)
+            else:
+                print("Solved!")
+            print(self.grid)
             return True
-
-        # get all combos of points
+        
         self.count += 1
 
         coord = str(indices[0][0]) + str(indices[1][0])
+        # print(coord)
+
+        print(self.grid)
 
         if verbose:
             print(self.grid)
             print(f"cell: ({indices[0][0] + 1},{indices[1][0] + 1})")
 
-        row, col = convert_coord_to_box(coord)
-        
         range_obj = np.arange(1,10)
         if reverse:
             range_obj = np.arange(start=9,stop=0,step=-1)
 
 
         for i in range_obj:
+            print(f"Trying {i} at {coord}")
             self.valchecks += 1
             if self.is_valid_val(i,coord):
                 self.update_cell_val(i,coord)
@@ -173,11 +228,12 @@ class Grid(object):
         coordlist = list(self.coords)
         random.shuffle(coordlist)
 
+
         ct = 0
         visited_coords = []
 
-        # sol1_obj = Grid(self.grid)
-        # sol2_obj = Grid(self.grid)
+        sol1_obj = Grid(self.grid.copy())
+        sol2_obj = Grid(self.grid.copy())
 
         while len(coordlist) != 0:
             ct += 1
@@ -185,6 +241,9 @@ class Grid(object):
             coord = coordlist.pop(0)
             if coord in visited_coords:
                 return
+        
+            print(coord)
+            print(self.grid)
             
             row, col = convert_coordstr_to_int(coord)
             val = self.grid[row][col]
@@ -206,8 +265,11 @@ class Grid(object):
                 print(f'count: {ct}\n')
                 print(self.grid)
 
-            sol1_obj = Grid(self.grid.copy())
-            sol2_obj = Grid(self.grid.copy())
+            sol1_obj.grid = self.grid.copy()
+            sol2_obj.grid = self.grid.copy()
+
+            sol1_obj.box_sets = self.box_sets.copy()
+            sol2_obj.box_sets = self.box_sets.copy()
 
             # sol1_obj = copy.copy(self)
             # sol2_obj = copy.copy(self)
@@ -230,20 +292,16 @@ class Grid(object):
 def convert_coordstr_to_int(coord):
     return int(coord[0]), int(coord[1])
 
-def convert_coord_to_box(coord,box=False):
+def convert_coord_to_box(coord):
     'Only care about 0-8'
     '''
     INPUT:
     coord: 2 char string representing row_idx, col_idx
-    box: bool, whether you want to return box_coords or not (if using box set implementation)
     '''
     row = int(coord[0])
     col = int(coord[1])
-    box_row, cell_row = row // 3, row % 3
-    box_col, cell_col = col // 3, col % 3
-    if box: 
-        return box_row, box_col, cell_row, cell_col 
-    return cell_row, cell_col
+    box_index = (row // 3) * 3 + (col // 3)
+    return box_index
     # Use this twice: grid pos (8,0) will generate (2,2), (0,0). 
     # Use first eles as grid idx, second eles as pos idx (2,0), (2,0)
 

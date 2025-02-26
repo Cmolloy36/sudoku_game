@@ -26,10 +26,10 @@ def main():
         fnm = sys.argv[0]
         verbose = sys.argv[1]
 
-    game_grid = Grid()
-    game_grid.grid = create_grids.create_valid_grid()
-    game_grid.create_unique_grid()
-    # game_grid.solve()
+    game_grid = Grid(Grid.empty_grid)
+    # game_grid.grid = create_grids.create_valid_grid()
+    # game_grid.create_unique_grid()
+    game_grid.solve()
     print(game_grid)
     
 

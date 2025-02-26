@@ -8,6 +8,9 @@ This project is my first independent project with [boot.dev](https://www.boot.de
 4. Create a function that can initialize a unique, solvable sudoku board
 5. Implement UI that performs backtracking algorithm to solve a puzzle
 
+## Description
+
+TODO: Include diagram detailing index conventions for rows, cols, boxes
 
 ## Usage
 
