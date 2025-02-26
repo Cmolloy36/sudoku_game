@@ -1,34 +1,42 @@
 import numpy as np
 import random
+import create_grids
 
 DEFAULT = 0
-
-'''
-
-'''
 
 class Grid(object):
     '''
     full 9x9 sudoku grid
     '''
+    empty_grid = np.array([
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0],
+
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0],
+
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0],
+        [0,0,0,  0,0,0,  0,0,0]]
+    )
 
     default_grid = np.array([
-                [1,2,3,  4,5,6,  7,8,9],
-                [4,5,6,  7,8,9,  1,2,3],
-                [7,8,9,  1,2,3,  4,5,6],
+        [1,2,3,  4,5,6,  7,8,9],
+        [4,5,6,  7,8,9,  1,2,3],
+        [7,8,9,  1,2,3,  4,5,6],
 
-                [2,3,1,  5,6,4,  8,9,7],
-                [5,6,4,  8,9,7,  2,3,1],
-                [8,9,7,  2,3,1,  5,6,4],
+        [2,3,1,  5,6,4,  8,9,7],
+        [5,6,4,  8,9,7,  2,3,1],
+        [8,9,7,  2,3,1,  5,6,4],
 
-                [3,1,2,  6,4,5,  9,7,8],
-                [6,4,5,  9,7,8,  3,1,2],
-                [9,7,8,  3,1,2,  6,4,5]]
-                )
+        [3,1,2,  6,4,5,  9,7,8],
+        [6,4,5,  9,7,8,  3,1,2],
+        [9,7,8,  3,1,2,  6,4,5]]
+    )
 
     def __init__(self,grid=np.empty(0)):
-
-
         self.box_sets = np.empty((3,3),dtype=object)
         
         for i in range(3):
@@ -44,8 +52,10 @@ class Grid(object):
         if grid.size != 0:
             self.grid = grid
         else:
-            self.grid = Grid.default_grid
-            self.create_unique_grid()
+            self.grid = Grid.empty_grid
+            # self.grid = create_grids.create_valid_grid()
+            # print(self.grid)
+            # self.create_unique_grid()
 
         self.initialize_box_sets()
 
@@ -55,12 +65,13 @@ class Grid(object):
     
 
     def __eq__(self,oth):
-        self_grid = self.grid.flatten()
-        oth_grid = oth.grid.flatten()
-        for i in range(self.grid.size):
-            if self_grid[i] != oth_grid[i]:
-                return False
-        return True
+        if self.grid.all() == oth.grid.all(): # I don't know if this works
+            return True
+        return False
+    
+
+    def __copy__(self):
+        return Grid(self.grid)
 
     
     def initialize_box_sets(self):
@@ -127,9 +138,9 @@ class Grid(object):
         if indices[0].size == 0:
             if verbose:
                 print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
-            else:
-                print("Solved!")
-            print(self.grid)
+            # else:
+            #     print("Solved!")
+            # print(self.grid)
             return True
 
         # get all combos of points
@@ -158,35 +169,58 @@ class Grid(object):
         return False
     
     
-    def create_unique_grid(self): # https://stackoverflow.com/questions/6924216/how-to-generate-sudoku-boards-with-unique-solutions
-        coordlist = self.coords
+    def create_unique_grid(self,verbose=False): # https://stackoverflow.com/questions/6924216/how-to-generate-sudoku-boards-with-unique-solutions
+        coordlist = list(self.coords)
         random.shuffle(coordlist)
 
         ct = 0
         visited_coords = []
+
+        # sol1_obj = Grid(self.grid)
+        # sol2_obj = Grid(self.grid)
 
         while len(coordlist) != 0:
             ct += 1
 
             coord = coordlist.pop(0)
             if coord in visited_coords:
-                break
+                return
+            
+            row, col = convert_coordstr_to_int(coord)
+            val = self.grid[row][col]
+            
+            '''
+            to implement difficulty,
+            stop when self.grid.where()'''
+
             visited_coords.append(coord)
             self.reset_cell_val(coord)
 
-            print(f'count: {ct}\n')
-            print(self.grid)
+            # indices = np.where(self.grid == DEFAULT)
 
-            sol1 = self.solve(verbose=False) # not solving for some reason
-            print(sol1)
-            if sol1:
-                sol2 = self.solve(verbose=False,reverse=True)
-                print('sol1: \n{sol1}')
-                print('sol2: \n{sol2}')
-                if sol1 != sol2:
-                    coordlist.append(coord)
-                    print('hi')
-                    break
+            # for i in range(len(indices[0])):
+            #     sol1_obj.reset_cell_val(str(indices[0][0]) + str(indices[1][0]))
+            #     sol2_obj.reset_cell_val(str(indices[0][0]) + str(indices[1][0]))
+
+            if verbose:
+                print(f'count: {ct}\n')
+                print(self.grid)
+
+            sol1_obj = Grid(self.grid.copy())
+            sol2_obj = Grid(self.grid.copy())
+
+            # sol1_obj = copy.copy(self)
+            # sol2_obj = copy.copy(self)
+            sol1_obj.solve(verbose=False,reverse=False) # not solving for some reason
+            sol2_obj.solve(verbose=False,reverse=True)
+
+            # print(f'self: \n{self.grid}')
+            # print(f'sol1: \n{sol1_obj.grid}')
+            # print(f'sol2: \n{sol2_obj.grid}')
+
+            if not np.array_equal(sol1_obj.grid, sol2_obj.grid):
+                coordlist.append(coord)
+                self.update_cell_val(val,coord)
                 
 
         

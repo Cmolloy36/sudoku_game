@@ -1,6 +1,10 @@
 import sys
 import argparse
+
+import create_grids
 from sudoku_objects import *
+
+
 """
 CLI Args should be:
 args[0] = fnm
@@ -22,24 +26,11 @@ def main():
         fnm = sys.argv[0]
         verbose = sys.argv[1]
 
-    grid = np.array([
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0],
-
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0],
-
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0],
-    [0,0,0,  0,0,0,  0,0,0]]
-    )
-
     game_grid = Grid()
-    
-    print(game_grid.grid)
-    # game_grid.solve(verbose)
+    game_grid.grid = create_grids.create_valid_grid()
+    game_grid.create_unique_grid()
+    # game_grid.solve()
+    print(game_grid)
     
 
 if __name__ == '__main__':
