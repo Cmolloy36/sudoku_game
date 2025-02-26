@@ -180,6 +180,8 @@ class Grid(object):
 
 
     def solve(self,verbose=False,reverse=False):
+        self.set_constraints()
+
         indices = np.where(self.grid == DEFAULT) #this could be optimized to only get one
         # print(len(indices[0]))
         if indices[0].size == 0:
@@ -215,7 +217,7 @@ class Grid(object):
         return False
     
     
-    def create_unique_grid(self,verbose=False): # https://stackoverflow.com/questions/6924216/how-to-generate-sudoku-boards-with-unique-solutions
+    def create_unique_grid(self,verbose=False,difficulty='medium'): # https://stackoverflow.com/questions/6924216/how-to-generate-sudoku-boards-with-unique-solutions
         coordlist = list(self.coords)
         random.shuffle(coordlist)
 
@@ -225,7 +227,16 @@ class Grid(object):
         sol1_obj = Grid(self.grid.copy())
         sol2_obj = Grid(self.grid.copy())
 
-        while len(coordlist) != 0:
+        difficulty_targets = {
+        "easy": 30,
+        "medium": 45,
+        "hard": 50,
+        "expert": 55
+        }
+
+        target_empties = difficulty_targets.get(difficulty)
+
+        while len(coordlist) > 0:
             ct += 1
 
             coord = coordlist.pop(0)
@@ -234,6 +245,9 @@ class Grid(object):
             
             row, col = convert_coordstr_to_int(coord)
             val = self.grid[row][col]
+
+            if val == DEFAULT:
+                continue
             
             '''
             to implement difficulty,
@@ -243,19 +257,26 @@ class Grid(object):
             self.reset_cell_val(coord)
 
             if verbose:
-                print(f'count: {ct}\n')
-                print(self.grid)
+                print(f'Removed cell at {coord}, value was {val}')
+                print(f'Emptied cells so far: {81 - len(coordlist)}')
+                print(self)
 
-            sol1_obj.grid = self.grid.copy()
-            sol2_obj.grid = self.grid.copy()
+            sol1_obj = Grid(self.grid.copy())
+            sol2_obj = Grid(self.grid.copy())
 
-            sol1_obj.solve(verbose=False,reverse=False) # not solving for some reason
+            sol1_obj.solve(verbose=False,reverse=False)
             sol2_obj.solve(verbose=False,reverse=True)
 
+        
             if not np.array_equal(sol1_obj.grid, sol2_obj.grid):
                 coordlist.append(coord)
                 self.update_cell_val(val,coord)
-                return
+
+            if 81 - len(coordlist) >= target_empties:
+                if verbose:
+                    print(f"Reached target empty cells: {81 - len(coordlist)}")
+                break
+        return
     
 
 def convert_coordstr_to_int(coord):

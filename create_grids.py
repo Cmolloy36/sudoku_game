@@ -1,8 +1,6 @@
-import copy
-
 from sudoku_objects import *
                 
-def create_valid_grid():
+def create_valid_grid(verbose=False):
     grid_obj = Grid(Grid.empty_grid)
     # print(grid_obj)
     coordlist = list(grid_obj.coords)
@@ -18,7 +16,10 @@ def create_valid_grid():
         for i in range(1,10):
             if temp_obj.is_valid_val(i,coord):
                 c_list.append(i)
-        # print(f"coord: {coord}: {c_list}")
+
+        if verbose:
+            print(f"coord: {coord}: {c_list}")
+            
         val = random.choice(c_list)
         temp_obj.update_cell_val(val,coord)
 
