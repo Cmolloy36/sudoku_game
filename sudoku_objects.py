@@ -259,7 +259,7 @@ class Grid(object):
             if verbose:
                 print(f'Removed cell at {coord}, value was {val}')
                 print(f'Emptied cells so far: {81 - len(coordlist)}')
-                print(self)
+                print(self.grid)
 
             sol1_obj = Grid(self.grid.copy())
             sol2_obj = Grid(self.grid.copy())
@@ -273,6 +273,7 @@ class Grid(object):
                 self.update_cell_val(val,coord)
 
             if 81 - len(coordlist) >= target_empties:
+                self.set_constraints()
                 if verbose:
                     print(f"Reached target empty cells: {81 - len(coordlist)}")
                 break

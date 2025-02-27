@@ -31,3 +31,17 @@ def create_valid_grid(verbose=False):
             coordlist.append(coord)
 
     return temp_obj.grid
+
+def initialize_game_grid(args):
+    game_grid = Grid(Grid.empty_grid)
+    # print(game_grid.grid)
+
+    print('Creating valid grid...')
+    game_grid.grid = create_valid_grid(args.verbose)
+    # print(game_grid.grid)
+
+    print('Creating unique grid...')
+    game_grid.create_unique_grid(args.verbose,args.difficulty)
+    print(game_grid.grid)
+
+    return game_grid

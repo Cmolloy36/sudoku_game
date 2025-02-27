@@ -143,7 +143,7 @@ class TestGrid(unittest.TestCase):
 
         self.assertTrue(np.array_equal(sol1_obj.grid, sol2_obj.grid))
 
-    '''
+    
     def test_create_valid_grid(self):
         game_grid = Grid()
 
@@ -160,8 +160,3 @@ class TestGrid(unittest.TestCase):
         for col in range(game_grid.grid.shape[1]):
             col_set = set(game_grid.grid[col])
             self.assertEqual(col_set,{1,2,3,4,5,6,7,8,9})
-
-        box_coords = cross('012','012')
-        for box_coord in box_coords:
-            self.assertEqual(game_grid.box_sets[int(box_coord[0])][int(box_coord[1])],set())
-            '''

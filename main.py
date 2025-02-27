@@ -1,7 +1,7 @@
 import argparse
 
 import create_grids
-from play_game import play_game
+from play_game import play_game_cli, play_game_gui
 from sudoku_objects import *
 
 
@@ -21,26 +21,19 @@ def main():
     group.add_argument('--CLI', action='store_true', help='Play in CLI mode')
     group.add_argument('--GUI', action='store_true', help='Play in GUI mode')
 
-    parser.add_argument('--difficulty', choices=['easy', 'medium', 'hard', 'expert'], required=False, default = 'medium', help='Set game difficulty')
+    parser.add_argument('-d','--difficulty', choices=['easy', 'medium', 'hard', 'expert'], required=False, default = 'medium', help='Set game difficulty')
 
     args = parser.parse_args()
 
-    play_game(args)
+    play_game = True
 
-    # game_grid = Grid(Grid.empty_grid)
-    # # print(game_grid.grid)
+    if args.CLI:
+        while play_game:
+            game_grid = create_grids.initialize_game_grid(args)
+            play_game = play_game_cli(args,game_grid)
+        
+    # play_game_gui(args,game_grid)
 
-    # game_grid.grid = create_grids.create_valid_grid(args.verbose)
-    # # print(game_grid.grid)
-
-    # game_grid.create_unique_grid(args.verbose,args.difficulty)
-    # print('Creating unique grid...')
-    # print(game_grid.grid)
-
-    # game_grid.solve(args.verbose)
-    # print(game_grid.grid)
-
-    
 
 if __name__ == '__main__':
     main()
