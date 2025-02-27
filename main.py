@@ -31,6 +31,8 @@ def main():
         while play_game:
             game_grid = create_grids.initialize_game_grid(args)
             play_game = play_game_cli(args,game_grid)
+            print('Goodbye!')
+            
         
     # play_game_gui(args,game_grid)
 

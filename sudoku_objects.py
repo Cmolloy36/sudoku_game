@@ -66,8 +66,7 @@ class Grid(object):
             # print(self.grid)
             # self.create_unique_grid()
 
-        self.cell_possible_values = {coord: set(range(1, 10)) for coord in self.coords}
-        
+        self.cell_possible_values = {coord: set(range(1, 10)) for coord in self.coords} # unused, but could be implemented for optimization
 
         self.set_constraints()
 

@@ -1,7 +1,7 @@
 from sudoku_objects import *
                 
 def create_valid_grid(verbose=False):
-    grid_obj = Grid(Grid.empty_grid)
+    grid_obj = Grid(Grid.empty_grid.copy())
     # print(grid_obj)
     coordlist = list(grid_obj.coords)
     # random.shuffle(coordlist)

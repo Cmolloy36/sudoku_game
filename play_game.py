@@ -17,7 +17,12 @@ def play_game_cli(args,game_grid):
 
             if not args.verbose:
                 print(game_grid.grid)
-            return
+            
+            print("\nWould you like to play again?")
+            play_again = input('Enter "yes" or "no" here: ')
+
+            return True if play_again == 'yes' else False
+
         elif play_or_solve == 'quit':
             print('Goodbye!')
             sys.exit()
