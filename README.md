@@ -8,7 +8,6 @@ This project is my first independent project with [boot.dev](https://www.boot.de
 [] Implement game playable from GUI
 
 
-
 ## Description
 
 TODO: Include diagram detailing index conventions for rows, cols, boxes

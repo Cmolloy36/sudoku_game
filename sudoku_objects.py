@@ -184,9 +184,9 @@ class Grid(object):
         indices = np.where(self.grid == DEFAULT) #this could be optimized to only get one
         # print(len(indices[0]))
         if indices[0].size == 0:
-            if verbose:
-                print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
-                print(self.grid)
+            # if verbose:
+            #     print(f"Solved! Took {self.count} steps and {self.valchecks} value checks")
+            #     print(self.grid)
             
             return True
         

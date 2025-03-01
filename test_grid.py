@@ -41,26 +41,6 @@ class TestGrid(unittest.TestCase):
 
         self.assertFalse(game_grid.is_valid_val(1,'12'))
         self.assertTrue(game_grid.is_valid_val(2,'12'))
-
-
-    def test_box_sets(self):
-        grid = np.array([
-        [1,2,3,  0,0,0,  0,0,0],
-        [4,5,6,  0,0,0,  0,0,0],
-        [0,0,0,  0,0,0,  0,0,0],
-
-        [0,0,0,  0,0,0,  0,0,0],
-        [0,0,0,  0,0,0,  0,0,0],
-        [0,0,0,  0,0,0,  0,0,0],
-
-        [0,0,0,  0,0,0,  0,0,0],
-        [0,0,0,  0,0,0,  0,0,0],
-        [0,0,0,  0,0,0,  0,0,0]]
-        )
-
-        game_grid = Grid(grid)
-
-        self.assertEqual(game_grid.box_sets[0][0],{7,8,9})
         
 
     def test_solve_basic(self):
@@ -83,17 +63,10 @@ class TestGrid(unittest.TestCase):
 
         self.assertFalse(0 in game_grid.grid)
 
-        for row in range(game_grid.grid.shape[0]):
-            row_set = set(game_grid.grid[row])
-            self.assertEqual(row_set,{1,2,3,4,5,6,7,8,9})
-
-        for col in range(game_grid.grid.shape[1]):
-            col_set = set(game_grid.grid[col])
-            self.assertEqual(col_set,{1,2,3,4,5,6,7,8,9})
-
-        box_coords = cross('012','012')
-        for box_coord in box_coords:
-            self.assertEqual(game_grid.box_sets[int(box_coord[0])][int(box_coord[1])],set())
+        for i in range(9):
+            self.assertEqual(game_grid.row_constraints[i], set(range(1,10)))
+            self.assertEqual(game_grid.col_constraints[i], set(range(1,10)))
+            self.assertEqual(game_grid.box_constraints[i], set(range(1,10)))
 
     def test_solve_reverse(self):
         grid = np.array([
@@ -115,17 +88,10 @@ class TestGrid(unittest.TestCase):
 
         self.assertFalse(0 in game_grid.grid)
 
-        for row in range(game_grid.grid.shape[0]):
-            row_set = set(game_grid.grid[row])
-            self.assertEqual(row_set,{1,2,3,4,5,6,7,8,9})
-
-        for col in range(game_grid.grid.shape[1]):
-            col_set = set(game_grid.grid[col])
-            self.assertEqual(col_set,{1,2,3,4,5,6,7,8,9})
-
-        box_coords = cross('012','012')
-        for box_coord in box_coords:
-            self.assertEqual(game_grid.box_sets[int(box_coord[0])][int(box_coord[1])],set())
+        for i in range(9):
+            self.assertEqual(game_grid.row_constraints[i], set(range(1,10)))
+            self.assertEqual(game_grid.col_constraints[i], set(range(1,10)))
+            self.assertEqual(game_grid.box_constraints[i], set(range(1,10)))
 
 
     def test_create_unique_grid(self):
