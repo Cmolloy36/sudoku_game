@@ -2,12 +2,12 @@
 
 This project is my first independent project with [boot.dev](https://www.boot.dev/tracks/backend). With this project, I am aiming to implement a playable & solvable game of Sudoku from scratch. Specific goals are:
 
-[X] Learn to use Argparse
-[X] Implement UI that performs backtracking algorithm to solve a puzzle
-[X] Create a function that can initialize a unique, solvable sudoku board
-[X] Implement game playable from command line
-[] Implement game playable from GUI
-[] Learn about unittest.mock and user inputs
+[x] Learn to use Argparse
+[x] Implement UI that performs backtracking algorithm to solve a puzzle
+[x] Create a function that can initialize a unique, solvable sudoku board
+[x] Implement game playable from command line
+[ ] Implement game playable from GUI
+[ ] Learn about unittest.mock and user inputs
 
 
 ## Description
@@ -37,4 +37,4 @@ TODO: Update unit tests for `play_game` module
 
 ## Bugs
 
-[] If a user opts to play, then places one or more valid values in the grid, then elects to automatically solve the puzzle, sometimes the solver may not work. It will solve part of the puzzle and an already filled value will be changed seemingly randomly, preventing the solution of the puzzle.
+[ ] If a user opts to play, then places one or more valid values in the grid, then elects to automatically solve the puzzle, sometimes the solver may not work. It will solve part of the puzzle and an already filled value will be changed seemingly randomly, preventing the solution of the puzzle.
