@@ -23,7 +23,7 @@ Run `python3 main.py` in the terminal. Use `-h` or `--help` to see the available
 
 A valid sudoku grid will be generated, then some values will be taken away to make a grid with a unique solution. The chosen difficulty will determine the number of cells that are empty (It might take a little longer to generate expert games!)
 
-If you choose to play the game, use the format (<row>,<col>= <val>) to input values. Indices must be between 1-9.
+If you choose to play the game, use the format `(row,col = val)` to input values. Indices must be between 1-9.
 
 TODO: GUI game mode
 
