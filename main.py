@@ -19,7 +19,7 @@ def main():
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument('--CLI', action='store_true', help='Play in CLI mode')
-    group.add_argument('--GUI', action='store_true', help='Play in GUI mode')
+    # group.add_argument('--GUI', action='store_true', help='Play in GUI mode')
 
     parser.add_argument('-d','--difficulty', choices=['easy', 'medium', 'hard', 'expert'], required=False, default = 'medium', help='Set game difficulty')
 

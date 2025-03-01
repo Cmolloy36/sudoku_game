@@ -30,7 +30,7 @@ def play_game_cli(args,game_grid):
 
             while True:
                 user_input = input("Please enter a command: ")
-                coord_pattern = re.compile(r"[1-9],[1-9] = [1-9]")
+                coord_pattern = re.compile(r"\([1-9],[1-9]\) = [1-9]")
 
                 if user_input == 'quit':
                     print('Goodbye!')
@@ -50,7 +50,7 @@ def play_game_cli(args,game_grid):
 
                 elif coord_pattern.match(user_input):
                     val = int(user_input[-1])
-                    coord = str(int(user_input[2]) - 1) + str(int(user_input[3]) - 1)
+                    coord = str(int(user_input[1]) - 1) + str(int(user_input[3]) - 1)
 
                     if game_grid.is_valid_val(val,coord):
                         print('Good job!')
