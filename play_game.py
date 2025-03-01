@@ -9,7 +9,7 @@ def play_game_cli(args,game_grid):
     
 
     while True:
-        play_or_solve = input('Enter "play" or "solve" to continue. Enter "quit" to exit. ')
+        play_or_solve = play_q()
 
         if play_or_solve == 'solve':
             print('Solved grid:')
@@ -29,7 +29,7 @@ def play_game_cli(args,game_grid):
         elif play_or_solve == 'play':
 
             while True:
-                user_input = input("Please enter a command: ")
+                user_input = command_q()
                 coord_pattern = re.compile(r"\([1-9],[1-9]\) = [1-9]")
 
                 if user_input == 'quit':
@@ -66,12 +66,23 @@ def play_game_cli(args,game_grid):
             print(game_grid.grid)
 
             print("\nWould you like to play again?")
-            play_again = input('Enter "yes" or "no" here: ')
+            play_again = play_again_q()
 
             return True if play_again == 'yes' else False
 
         else:
             print("Please enter a valid command.")
+
+
+def play_q():
+    return input('Enter "play" or "solve" to continue. Enter "quit" to exit. ')
+
+def command_q():
+    return input("Please enter a command: ")
+
+def play_again_q():
+    return input('Enter "yes" or "no" here: ')
+
 
 
 def play_game_gui(args,game_grid):

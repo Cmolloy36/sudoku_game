@@ -8,8 +8,10 @@ import play_game
 from sudoku_objects import *
 from main import parser_fcn
 
+# Updating
 
 class TestGrid(unittest.TestCase):
+    @mock.patch('play_game.play_q',return_value='play')
     def test_play_solve(self):
         testargs = ["sudoku_game", "-v", "--CLI"]
         with mock.patch.object(sys, 'argv', testargs):
