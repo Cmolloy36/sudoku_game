@@ -4,7 +4,7 @@ class Window(object):
     def __init__(self,width,height):
         #width and height are given in px
         self.__root = Tk()
-        self.__root.title('Maze_Solver') 
+        self.__root.title('Sudoku Game') 
         self.__canvas = Canvas(self.__root,bg='white',height=height,width=width)
         self.__canvas.pack(expand=1) #if empty, defaults to top
         self.__running = False

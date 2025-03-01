@@ -6,6 +6,7 @@ from create_grids import create_valid_grid
 
 
 def play_game_cli(args,game_grid):
+    base_grid = game_grid.grid.copy()
     
 
     while True:
@@ -19,13 +20,20 @@ def play_game_cli(args,game_grid):
                 print(game_grid.grid)
             
             print("\nWould you like to play again?")
-            play_again = input('Enter "yes" or "no" here: ')
+            while True:
+                play_again = play_again_q()
 
-            return True if play_again == 'yes' else False
+                if play_again == 'yes':
+                    return True  
+                elif play_again == 'no':
+                    return False
+                else:
+                    print('Please enter a valid command')
 
         elif play_or_solve == 'quit':
             print('Goodbye!')
             sys.exit()
+
         elif play_or_solve == 'play':
 
             while True:
@@ -38,14 +46,14 @@ def play_game_cli(args,game_grid):
                 elif user_input == 'help':
                     print('''\nOptions:
     (<row>,<col>) = val: enter the row (1-9), column (1-9), and value (1-9)
-    solve: solve the current grid 
+    answer: get the answer of the current grid
     help: see what commands you have available
     quit: exit the program
         ''')
 
-                elif user_input == 'solve':
+                elif user_input == 'answer':
+                    game_grid.grid = base_grid
                     game_grid.solve(args.verbose)
-                    print(game_grid.grid)
                     break
 
                 elif coord_pattern.match(user_input):
@@ -66,9 +74,15 @@ def play_game_cli(args,game_grid):
             print(game_grid.grid)
 
             print("\nWould you like to play again?")
-            play_again = play_again_q()
+            while True:
+                play_again = play_again_q()
 
-            return True if play_again == 'yes' else False
+                if play_again == 'yes':
+                    return True  
+                elif play_again == 'no':
+                    return False
+                else:
+                    print('Please enter a valid command')
 
         else:
             print("Please enter a valid command.")

@@ -37,4 +37,6 @@ TODO: Update unit tests for `play_game` module
 
 ## Bugs
 
-- [ ] If a user opts to play, then places one or more valid values in the grid, then elects to automatically solve the puzzle, sometimes the solver may not work. It will solve part of the puzzle and an already filled value will be changed seemingly randomly, preventing the solution of the puzzle.
+Below is a list of discovered bugs. If they have been checked off, they have been addressed.
+
+- [X] If a user opts to play, then places one or more valid values in the grid, then elects to automatically solve the puzzle, sometimes the solver may not work. It will solve part of the puzzle and an already filled value will be changed seemingly randomly, preventing the solution of the puzzle.
