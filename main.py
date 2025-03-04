@@ -4,6 +4,8 @@ import sys
 import create_grids
 from play_game import play_game_cli, play_game_gui
 from sudoku_objects import *
+from window import *
+from draw_grid import *
 
 
 '''
@@ -19,24 +21,39 @@ def main():
     args = parser.parse_args()
 
     play_game = True
+    
 
-    if args.CLI:
+    if args.interface == 'CLI':
         while play_game:
             game_grid = create_grids.initialize_game_grid(args)
             play_game = play_game_cli(args,game_grid)
+
+
+    if args.interface == 'GUI':
+        print("Not yet implemented")
+
+        margin = 50
+        cell_size = 100
+        screen_x = screen_y = cell_size * 9 + 2 * margin
+        win = Window(screen_x, screen_y)
+
+        game_gui = SudokuUI(args,win)
+
+        # while play_game:
+        #     game_grid = create_grids.initialize_game_grid(args)
+        #     play_game = play_game_gui(args,game_grid)
+            
     
     print('Goodbye!')
-            
-        
-    # play_game_gui(args,game_grid)
+
+
 
 def parser_fcn(args):
     parser = argparse.ArgumentParser(prog='sudoku_game')
     parser.add_argument('-v','--verbose',action='store_true', help='Solve in verbose mode')
 
     group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('--CLI', action='store_true', help='Play in CLI mode')
-    # group.add_argument('--GUI', action='store_true', help='Play in GUI mode')
+    group.add_argument('-i','--interface', choices=['CLI','GUI'], default='CLI', help='Play in CLI or GUI mode')
 
     parser.add_argument('-d','--difficulty', choices=['easy', 'medium', 'hard', 'expert'], required=False, default = 'medium', help='Set game difficulty')
 

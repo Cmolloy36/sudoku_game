@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import time
 import create_grids
 
 DEFAULT = 0
@@ -50,13 +51,15 @@ class Grid(object):
         [0,0,0,  0,0,0,  0,0,0]]
     )
 
-    def __init__(self,grid=np.empty(0)):
+    def __init__(self,grid=np.empty(0),use_GUI=False):
         
         # Store valid values for cell
         self.coords = cross('012345678','012345678')
 
         self.count = 0
         self.valchecks = 0
+
+        self._cells = []
 
         if grid.size != 0:
             self.grid = grid
@@ -69,6 +72,10 @@ class Grid(object):
         self.cell_possible_values = {coord: set(range(1, 10)) for coord in self.coords} # unused, but could be implemented for optimization
 
         self.set_constraints()
+
+        if use_GUI:
+            self.draw
+            
 
 
     def __str__(self):
@@ -85,7 +92,7 @@ class Grid(object):
     
 
     def __copy__(self):
-        return Grid(self.grid)
+        return Grid(grid=self.grid)
 
     
     def set_constraints(self):
@@ -278,6 +285,8 @@ class Grid(object):
                 break
         return
     
+    # drawing functions
+
 
 def convert_coordstr_to_int(coord):
     return int(coord[0]), int(coord[1])
