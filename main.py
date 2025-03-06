@@ -24,18 +24,22 @@ def main():
     
 
     if args.interface == 'CLI':
+        print('CLI')
         while play_game:
             game_grid = create_grids.initialize_game_grid(args)
             play_game = play_game_cli(args,game_grid)
 
 
     if args.interface == 'GUI':
-        print("Not yet implemented")
+        print('GUI')
 
-        margin = 50
+        x_margin = 100
+        y_margin = 50
         cell_size = 100
-        screen_x = screen_y = cell_size * 9 + 2 * margin
-        win = Window(screen_x, screen_y)
+        screen_x = cell_size * 9 + 2 * x_margin
+        screen_y = cell_size * 9 + 2 * y_margin
+        win = Window(screen_x, screen_y,x_margin,y_margin)
+
 
         game_gui = SudokuUI(args,win)
 

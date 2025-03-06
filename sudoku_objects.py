@@ -73,8 +73,8 @@ class Grid(object):
 
         self.set_constraints()
 
-        if use_GUI:
-            self.draw
+        # if use_GUI:
+        #     self.draw
             
 
 

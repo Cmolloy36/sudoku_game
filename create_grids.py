@@ -42,6 +42,7 @@ def initialize_game_grid(args):
 
     print('Creating unique grid...')
     game_grid.create_unique_grid(args.verbose,args.difficulty)
-    print(game_grid.grid)
+    if args.interface == 'CLI':
+        print(game_grid.grid)
 
     return game_grid

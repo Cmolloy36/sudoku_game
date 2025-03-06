@@ -1,7 +1,7 @@
 from tkinter import Tk, BOTH, Canvas
 
 class Window(object):
-    def __init__(self,width,height,margin=50,cell_size=100):
+    def __init__(self,width,height,x_margin=100,y_margin=50,cell_size=100):
         #width and height are given in px
         self.__root = Tk()
         self.__root.title('Sudoku Game') 
@@ -10,16 +10,21 @@ class Window(object):
         self.__running = False
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
 
-        self.margin = margin
+        self.x_margin = x_margin
+        self.y_margin = y_margin
         self.cell_size = cell_size
-        self.screen_x = self.screen_y = cell_size * 9 + 2 * margin
+        self.screen_x = cell_size * 9 + 2 * x_margin
+        self.screen_y = cell_size * 9 + 2 * y_margin
 
 
     def get_canvas(self):
         return self.__canvas
     
-    def get_margin(self):
-        return self.margin
+    def get_x_margin(self):
+        return self.x_margin
+    
+    def get_y_margin(self):
+        return self.y_margin
     
     def get_cell_size(self):
         return self.cell_size
@@ -27,8 +32,11 @@ class Window(object):
     def get_screen_x(self):
         return self.screen_x
     
-    def get_secreen_y(self):
+    def get_screen_y(self):
         return self.screen_y
+    
+    def get_root(self):
+        return self.__root
 
 
     def redraw(self):
