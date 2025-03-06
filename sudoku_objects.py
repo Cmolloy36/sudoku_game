@@ -59,7 +59,7 @@ class Grid(object):
         self.count = 0
         self.valchecks = 0
 
-        self._cells = []
+        self.game_over = False
 
         if grid.size != 0:
             self.grid = grid

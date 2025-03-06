@@ -1,20 +1,25 @@
-from tkinter import Tk, BOTH, Canvas
+from tkinter import Tk, Frame, BOTH, Canvas
 
 class Window(object):
     def __init__(self,width,height,x_margin=100,y_margin=50,cell_size=100):
         #width and height are given in px
         self.__root = Tk()
         self.__root.title('Sudoku Game') 
-        self.__canvas = Canvas(self.__root,bg='white',height=height,width=width)
-        self.__canvas.pack(expand=1) #if empty, defaults to top
-        self.__running = False
-        self.__root.protocol("WM_DELETE_WINDOW", self.close)
 
         self.x_margin = x_margin
         self.y_margin = y_margin
         self.cell_size = cell_size
         self.screen_x = cell_size * 9 + 2 * x_margin
         self.screen_y = cell_size * 9 + 2 * y_margin
+
+        self.__frame = Frame(self.__root)
+        self.__frame.pack(fill=BOTH, expand=1)
+        
+        self.__canvas = Canvas(self.__root,bg='white',height=self.screen_y,width=self.screen_x)
+        self.__canvas.pack(fill=BOTH, expand=1)
+        
+        self.__running = False
+        self.__root.protocol("WM_DELETE_WINDOW", self.close)
 
 
     def get_canvas(self):
@@ -37,7 +42,9 @@ class Window(object):
     
     def get_root(self):
         return self.__root
-
+    
+    def start(self):
+        self.__root.mainloop()
 
     def redraw(self):
         #updates window each time this is called
@@ -90,4 +97,4 @@ class Rectangle(object):
         return Point(c_x,c_y)
     
     def draw(self,canvas,fill_color='black'):
-        canvas.create_rectangle(self.__point1.get_x(),self.__point2.get_x(),self.__point1.get_y(),self.__point4.get_y(),)
+        canvas.create_rectangle(self.__point1.get_x(),self.__point2.get_x(),self.__point1.get_y(),self.__point4.get_y())

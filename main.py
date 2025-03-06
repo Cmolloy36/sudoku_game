@@ -40,8 +40,10 @@ def main():
         screen_y = cell_size * 9 + 2 * y_margin
         win = Window(screen_x, screen_y,x_margin,y_margin)
 
-
+        
         game_gui = SudokuUI(args,win)
+        win.start()
+        
 
         # while play_game:
         #     game_grid = create_grids.initialize_game_grid(args)
