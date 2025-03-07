@@ -13,6 +13,8 @@ class SudokuUI(Frame):
         Frame.__init__(self, parent.get_root())
 
         self.row, self.col = -1, -1
+        self.text_idx = None
+
 
         self.__initUI()
         self.__new_game()
@@ -21,17 +23,18 @@ class SudokuUI(Frame):
     def __initUI(self):
         self.pack(fill=BOTH, expand=1)
         self.canvas.pack(fill=BOTH, side=TOP)
+        # self.canvas.place(relx=0.5, rely=0.5, anchor='n')
 
         self.__draw_grid()
         
-        solve_button = Button(self, text="Solve Puzzle", command=self.__solve_puzzle)
-        solve_button.pack(fill=BOTH, side=BOTTOM)
+        self.solve_button = Button(self, text="Solve Puzzle", command=self.__solve_puzzle)
+        self.solve_button.pack(side=BOTTOM)
         
-        clear_button = Button(self, text="Clear Answers", command=self.__clear_answers)
-        clear_button.pack(fill=BOTH, side=BOTTOM)
+        self.clear_button = Button(self, text="Clear Answers", command=self.__clear_answers)
+        self.clear_button.pack(side=BOTTOM)
 
         self.new_button = Button(self, text="New Game", command=self.__new_game)
-        self.new_button.pack(side=LEFT, padx=5)
+        self.new_button.pack(side=BOTTOM)
 
 
         self.canvas.bind("<Button-1>", self.__cell_clicked)
@@ -40,11 +43,24 @@ class SudokuUI(Frame):
 
 
     def __new_game(self):
+        self.clear_button.config(state=NORMAL)
+        self.solve_button.config(state=NORMAL)
+
+        if self.text_idx != None:
+            for row in range(9):
+                for col in range(9):
+                    self.row, self.col = row, col
+                    self.__delete_cell_val()
+
         self.game_grid = create_grids.initialize_game_grid(self.args)
         self.text_idx = [[None for _ in range(9)] for _ in range(9)]
         self.orig_vals = self.game_grid.grid.copy()
-        self.canvas.delete("original numbers")
+        temp = Grid(self.game_grid.grid.copy())
+        temp.solve()
+        self.solved_grid = temp.grid
+
         self.__draw_initial_puzzle()
+
 
     def __draw_grid(self):
         self.canvas.delete("grid_lines")
@@ -69,6 +85,7 @@ class SudokuUI(Frame):
     def __draw_initial_puzzle(self,color='black'):
         
         self.canvas.delete("user input numbers")
+        self.canvas.delete("victory")
         
         for row in range(9):
             for col in range(9):
@@ -76,8 +93,9 @@ class SudokuUI(Frame):
                 val = self.game_grid.grid[row][col]
                 if val != DEFAULT:
                     self.__draw_cell(tag='original numbers')
+                    self.orig_text_idx = self.text_idx.copy()
 
-        print(self.game_grid.grid)
+        # print(self.game_grid.grid)
         self.row, self.col = -1, -1
         print('Done generating puzzle!')
 
@@ -86,8 +104,15 @@ class SudokuUI(Frame):
         solver = Grid(self.game_grid.grid.copy())
         if solver.solve():
             self.game_grid.grid = solver.grid
-            self.__draw_initial_puzzle()
-            self.game_over = True
+        
+        for row in range(9):
+            for col in range(9):
+                if self.orig_vals[row][col] == DEFAULT and self.game_grid.grid[row][col] != DEFAULT:
+                    self.row, self.col = row, col
+                    self.__draw_cell(tag='user input numbers')
+                    
+        self.row, self.col = -1, -1
+        self.game_over = True
 
 
     def __draw_cell(self,tag=None):
@@ -104,27 +129,27 @@ class SudokuUI(Frame):
         else:
             color = "dodger blue"
 
-        print('created text')
+        # print('created text')
 
         self.text_idx[self.row][self.col] = self.canvas.create_text(
             x, y, text=self.game_grid.grid[self.row][self.col], tags=tag, fill=color, font=("Arial", 40)
         )
 
-        print(self.text_idx[self.row][self.col])
+        # print(self.text_idx[self.row][self.col])
         
         return self.text_idx[self.row][self.col]
 
     def __delete_cell_val(self,event=None):
-        print('deleting text')
-        print(self.text_idx[self.row][self.col])
+        # print('deleting text')
+        # print(self.text_idx[self.row][self.col])
         if self.text_idx[self.row][self.col] != None:
             self.game_grid.grid[self.row][self.col] = DEFAULT
 
 
-            if self.text_idx[self.row][self.col]:
-                print(self.text_idx[self.row][self.col])
-                self.canvas.delete(self.text_idx[self.row][self.col])
-                self.text_idx[self.row][self.col] = None
+            # if self.text_idx[self.row][self.col]:
+                # print(self.text_idx[self.row][self.col])
+            self.canvas.delete(self.text_idx[self.row][self.col])
+            self.text_idx[self.row][self.col] = None
 
 
     def __cell_clicked(self, event):
@@ -144,8 +169,8 @@ class SudokuUI(Frame):
                 self.row, self.col = -1, -1
             elif self.orig_vals[row][col] == DEFAULT:
                 self.row, self.col = row, col
-                print(self.row,self.col)
-                print(self.text_idx[self.row][self.col])
+                # print(self.row,self.col)
+                # print(self.text_idx[self.row][self.col])
 
         self.__draw_cursor()
 
@@ -158,8 +183,31 @@ class SudokuUI(Frame):
             y1 = self.parent.get_y_margin() + (self.row + 1) * self.parent.get_cell_size() - 1
             self.canvas.create_rectangle(
                 x0-1, y0-1, x1, y1,
-                outline='red', tags="cursor", width=3
+                outline='snow4', fill='gainsboro', tags="cursor", width=5
             )
+            self.canvas.lower("cursor")
+
+
+    def __draw_victory(self):
+        self.clear_button.config(state=DISABLED)
+        self.solve_button.config(state=DISABLED)
+
+        x0 = self.parent.get_screen_x() // 2 - 160
+        y0 = self.parent.get_screen_y() // 2 - 70
+        x1 = self.parent.get_screen_x() // 2 + 160
+        y1 = self.parent.get_screen_y() // 2 + 70
+
+        self.canvas.create_rectangle(x0, y0, x1, y1,
+                outline='snow4', fill='gainsboro', tags="victory", width=5
+            )
+        
+        x0 = self.parent.get_screen_x() // 2 
+        y0 = self.parent.get_screen_y() // 2 
+
+        self.canvas.create_text(x0, y0, 
+                text="You Win!", tags="victory", font=("Arial", 40)
+            )
+
 
     def __key_pressed(self,event):
         if self.row >= 0 and self.col >= 0:
@@ -167,15 +215,21 @@ class SudokuUI(Frame):
                 self.__delete_cell_val()
                 self.game_grid.grid[self.row][self.col] = int(event.char)
                 self.text_idx[self.row][self.col] = self.__draw_cell(tag='user input numbers')
-                print(self.text_idx[self.row][self.col])
+                # print(self.text_idx[self.row][self.col])
                 self.col, self.row = -1, -1
                 # self.__draw_cursor() # this just deletes the cursor. Not sure I like it.
-                # if self.check_win():
-                #     self.__draw_victory()
+                if self.check_win():
+                    self.__draw_victory()
 
 
     def __clear_answers(self):
         # Reset to original puzzle
-        self.game_grid.grid = self.orig_vals.copy()
-        self.__draw_initial_puzzle()
-        self.game_over = False
+        for row in range(9):
+            for col in range(9):
+                if self.orig_vals[row][col] == DEFAULT:
+                    self.row, self.col = row, col
+                    self.__delete_cell_val()
+
+
+    def check_win(self):
+        return np.array_equal(self.game_grid.grid, self.solved_grid)
