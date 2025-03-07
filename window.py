@@ -42,7 +42,7 @@ class Window(object):
     
     def get_root(self):
         return self.__root
-    
+
     def start(self):
         self.__root.mainloop()
 

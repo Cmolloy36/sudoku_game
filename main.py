@@ -56,7 +56,7 @@ def parser_fcn(args):
     parser.add_argument('-v','--verbose',action='store_true', help='Solve in verbose mode')
 
     group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-i','--interface', choices=['CLI','GUI'], default='CLI', help='Play in CLI or GUI mode')
+    group.add_argument('-i','--interface', choices=['CLI','GUI'], default='GUI', help='Play in CLI or GUI mode')
 
     parser.add_argument('-d','--difficulty', choices=['easy', 'medium', 'hard', 'expert'], required=False, default = 'medium', help='Set game difficulty')
 
