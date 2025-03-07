@@ -24,15 +24,12 @@ def main():
     
 
     if args.interface == 'CLI':
-        print('CLI')
         while play_game:
             game_grid = create_grids.initialize_game_grid(args)
             play_game = play_game_cli(args,game_grid)
 
 
     if args.interface == 'GUI':
-        print('GUI')
-
         x_margin = 100
         y_margin = 50
         cell_size = 100
